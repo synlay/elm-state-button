@@ -1,0 +1,16 @@
+{
+  "name": "elm-state-button",
+  "version": "0.1.0",
+  "license": "MIT",
+  "description": "elm state button based on a small state machine",
+  "scripts": {
+    "start": "elm-live ./src/Main.elm --output=./target/main.js --dir=./target",
+    "clean": "rimraf target elm-stuff tests/elm-stuff node_modules",
+    "test": "elm-test"
+  },
+  "devDependencies": {
+    "elm-test": "0.18.3",
+    "elm-live": "2.7.4",
+    "rimraf": "2.6.1"
+  }
+}
