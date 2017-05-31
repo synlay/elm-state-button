@@ -1,4 +1,10 @@
-# elm-package generated files
-elm-stuff
-# elm-repl generated files
-repl-temp-*
+logs/*
+!.gitkeep
+node_modules/
+elm-stuff/
+tests/elm-stuff/
+tmp
+.DS_Store
+.idea
+target/
+npm-debug.log
