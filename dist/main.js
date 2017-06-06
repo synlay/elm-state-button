@@ -14495,9 +14495,9 @@ var _synlay$elm_state_button$Machine$newMachine = F2(
 			transitions: _elm_lang$core$Dict$fromList(transitions)
 		};
 	});
-var _synlay$elm_state_button$Machine$State = F5(
-	function (a, b, c, d, e) {
-		return {identity: a, text: b, icon: c, disabled: d, initAnimation: e};
+var _synlay$elm_state_button$Machine$State = F6(
+	function (a, b, c, d, e, f) {
+		return {identity: a, text: b, icon: c, style: d, disabled: e, initAnimation: f};
 	});
 var _synlay$elm_state_button$Machine$Animated = F2(
 	function (a, b) {
@@ -14564,9 +14564,9 @@ var _synlay$elm_state_button$Main$MachineError = F3(
 	function (a, b, c) {
 		return {message: a, error: b, state: c};
 	});
-var _synlay$elm_state_button$Main$Flag = F2(
-	function (a, b) {
-		return {text: a, icon: b};
+var _synlay$elm_state_button$Main$Flag = F3(
+	function (a, b, c) {
+		return {text: a, icon: b, style: c};
 	});
 var _synlay$elm_state_button$Main$Flags = F4(
 	function (a, b, c, d) {
@@ -14585,7 +14585,7 @@ var _synlay$elm_state_button$Main$view = function (model) {
 				_synlay$elm_state_button$Main$InitAnimation(model)),
 			_1: {
 				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('btn btn-default btn-block'),
+				_0: _elm_lang$html$Html_Attributes$class(model.state.style),
 				_1: {
 					ctor: '::',
 					_0: _elm_lang$html$Html_Attributes$disabled(model.state.disabled),
@@ -14713,6 +14713,7 @@ var _synlay$elm_state_button$Main$init = function (flags) {
 			identity: 'failure',
 			text: flags.failure.text,
 			icon: flags.failure.icon,
+			style: flags.failure.style,
 			disabled: false,
 			initAnimation: _elm_lang$core$Maybe$Just(_synlay$elm_state_button$Animated$shake)
 		});
@@ -14721,13 +14722,14 @@ var _synlay$elm_state_button$Main$init = function (flags) {
 			identity: 'succeed',
 			text: flags.succeed.text,
 			icon: flags.succeed.icon,
+			style: flags.succeed.style,
 			disabled: false,
 			initAnimation: _elm_lang$core$Maybe$Just(_synlay$elm_state_button$Animated$pulse)
 		});
 	var process = _synlay$elm_state_button$Machine$newState(
-		{identity: 'process', text: flags.process.text, icon: flags.process.icon, disabled: true, initAnimation: _elm_lang$core$Maybe$Nothing});
+		{identity: 'process', text: flags.process.text, icon: flags.process.icon, style: flags.process.style, disabled: true, initAnimation: _elm_lang$core$Maybe$Nothing});
 	var start = _synlay$elm_state_button$Machine$newState(
-		{identity: 'start', text: flags.start.text, icon: flags.start.icon, disabled: false, initAnimation: _elm_lang$core$Maybe$Nothing});
+		{identity: 'start', text: flags.start.text, icon: flags.start.icon, style: flags.start.style, disabled: false, initAnimation: _elm_lang$core$Maybe$Nothing});
 	var machine = A2(
 		_synlay$elm_state_button$Machine$newMachine,
 		start,
@@ -14821,11 +14823,16 @@ var _synlay$elm_state_button$Main$main = _elm_lang$html$Html$programWithFlags(
 										function (icon) {
 											return A2(
 												_elm_lang$core$Json_Decode$andThen,
-												function (text) {
-													return _elm_lang$core$Json_Decode$succeed(
-														{icon: icon, text: text});
+												function (style) {
+													return A2(
+														_elm_lang$core$Json_Decode$andThen,
+														function (text) {
+															return _elm_lang$core$Json_Decode$succeed(
+																{icon: icon, style: style, text: text});
+														},
+														A2(_elm_lang$core$Json_Decode$field, 'text', _elm_lang$core$Json_Decode$string));
 												},
-												A2(_elm_lang$core$Json_Decode$field, 'text', _elm_lang$core$Json_Decode$string));
+												A2(_elm_lang$core$Json_Decode$field, 'style', _elm_lang$core$Json_Decode$string));
 										},
 										A2(_elm_lang$core$Json_Decode$field, 'icon', _elm_lang$core$Json_Decode$string))));
 						},
@@ -14837,11 +14844,16 @@ var _synlay$elm_state_button$Main$main = _elm_lang$html$Html$programWithFlags(
 								function (icon) {
 									return A2(
 										_elm_lang$core$Json_Decode$andThen,
-										function (text) {
-											return _elm_lang$core$Json_Decode$succeed(
-												{icon: icon, text: text});
+										function (style) {
+											return A2(
+												_elm_lang$core$Json_Decode$andThen,
+												function (text) {
+													return _elm_lang$core$Json_Decode$succeed(
+														{icon: icon, style: style, text: text});
+												},
+												A2(_elm_lang$core$Json_Decode$field, 'text', _elm_lang$core$Json_Decode$string));
 										},
-										A2(_elm_lang$core$Json_Decode$field, 'text', _elm_lang$core$Json_Decode$string));
+										A2(_elm_lang$core$Json_Decode$field, 'style', _elm_lang$core$Json_Decode$string));
 								},
 								A2(_elm_lang$core$Json_Decode$field, 'icon', _elm_lang$core$Json_Decode$string))));
 				},
@@ -14853,11 +14865,16 @@ var _synlay$elm_state_button$Main$main = _elm_lang$html$Html$programWithFlags(
 						function (icon) {
 							return A2(
 								_elm_lang$core$Json_Decode$andThen,
-								function (text) {
-									return _elm_lang$core$Json_Decode$succeed(
-										{icon: icon, text: text});
+								function (style) {
+									return A2(
+										_elm_lang$core$Json_Decode$andThen,
+										function (text) {
+											return _elm_lang$core$Json_Decode$succeed(
+												{icon: icon, style: style, text: text});
+										},
+										A2(_elm_lang$core$Json_Decode$field, 'text', _elm_lang$core$Json_Decode$string));
 								},
-								A2(_elm_lang$core$Json_Decode$field, 'text', _elm_lang$core$Json_Decode$string));
+								A2(_elm_lang$core$Json_Decode$field, 'style', _elm_lang$core$Json_Decode$string));
 						},
 						A2(_elm_lang$core$Json_Decode$field, 'icon', _elm_lang$core$Json_Decode$string))));
 		},
@@ -14869,11 +14886,16 @@ var _synlay$elm_state_button$Main$main = _elm_lang$html$Html$programWithFlags(
 				function (icon) {
 					return A2(
 						_elm_lang$core$Json_Decode$andThen,
-						function (text) {
-							return _elm_lang$core$Json_Decode$succeed(
-								{icon: icon, text: text});
+						function (style) {
+							return A2(
+								_elm_lang$core$Json_Decode$andThen,
+								function (text) {
+									return _elm_lang$core$Json_Decode$succeed(
+										{icon: icon, style: style, text: text});
+								},
+								A2(_elm_lang$core$Json_Decode$field, 'text', _elm_lang$core$Json_Decode$string));
 						},
-						A2(_elm_lang$core$Json_Decode$field, 'text', _elm_lang$core$Json_Decode$string));
+						A2(_elm_lang$core$Json_Decode$field, 'style', _elm_lang$core$Json_Decode$string));
 				},
 				A2(_elm_lang$core$Json_Decode$field, 'icon', _elm_lang$core$Json_Decode$string)))));
 
