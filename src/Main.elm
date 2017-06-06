@@ -34,6 +34,7 @@ type alias MachineError =
 type alias Flag =
     { text : String
     , icon : String
+    , style : String
     }
 
 
@@ -84,6 +85,7 @@ init flags =
                 { identity = "start"
                 , text = flags.start.text
                 , icon = flags.start.icon
+                , style = flags.start.style
                 , disabled = False
                 , initAnimation = Nothing
                 }
@@ -93,6 +95,7 @@ init flags =
                 { identity = "process"
                 , text = flags.process.text
                 , icon = flags.process.icon
+                , style = flags.process.style
                 , disabled = True
                 , initAnimation = Nothing
                 }
@@ -102,6 +105,7 @@ init flags =
                 { identity = "succeed"
                 , text = flags.succeed.text
                 , icon = flags.succeed.icon
+                , style = flags.succeed.style
                 , disabled = False
                 , initAnimation = Just pulse
                 }
@@ -111,6 +115,7 @@ init flags =
                 { identity = "failure"
                 , text = flags.failure.text
                 , icon = flags.failure.icon
+                , style = flags.failure.style
                 , disabled = False
                 , initAnimation = Just shake
                 }
@@ -175,7 +180,7 @@ view model =
         buttonAttributes =
             viewConstructButtonAnimation model
                 [ onClick (InitAnimation model)
-                , class "btn btn-default btn-block"
+                , class model.state.style
                 , disabled model.state.disabled
                 ]
     in
