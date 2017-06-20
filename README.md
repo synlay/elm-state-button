@@ -2,7 +2,45 @@
 
 Elm state button based on a small state machine.
 
-## Example
+### State machine model
+```basic
+                     -> succeed (final)
+                   /
+start -> process -
+  ^                \
+  |                  -> failure -
+  |                               |
+    - - - - - - - - - - - - - - -
+```
+
+### Install
+
+Install project dependencies.
+
+`npm install`
+
+### Test
+
+Run unit tests with [elm-test](http://package.elm-lang.org/packages/elm-community/elm-test/latest)
+
+`npm test`
+
+### Build
+Build main.js library file
+
+`npm run build`
+
+### Clean
+
+Remove project dependencies and builds.
+
+`npm run clean`
+
+### Demo
+
+A live demo is available under misc/demo.html
+
+### Example
 
 ```html
 <div id="state-button"></div>
@@ -35,46 +73,5 @@ Elm state button based on a small state machine.
 </script>
 ```
 
-## State machine model
-```basic
-                     -> succeed (final)
-                   /
-start -> process -
-  ^                \
-  |                  -> failure -
-  |                               |
-    - - - - - - - - - - - - - - -
-```
-
-
-
-### Demo
-
-A live demo is available under misc/demo.html
-
-### Install
-
-Install project dependencies.
-
-`npm install`
-
-### Test
-
-Run unit tests with [elm-test](http://package.elm-lang.org/packages/elm-community/elm-test/latest)
-
-`npm test`
-
-### Build
-Build main.js library file
-
-`npm run build`
-
-### Clean
-
-Remove project dependencies and builds.
-
-`npm run clean`
-
 ### Licence
 MIT License
-
