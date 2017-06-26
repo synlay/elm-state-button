@@ -25,11 +25,6 @@ Run unit tests with [elm-test](http://package.elm-lang.org/packages/elm-communit
 
 `npm test`
 
-### Build
-Build main.js library file
-
-`npm run build`
-
 ### Clean
 
 Remove project dependencies and builds.
