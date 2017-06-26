@@ -16,6 +16,7 @@ type alias State =
     { identity : String
     , text : String
     , icon : String
+    , style : String
     , disabled : Bool
     , initAnimation : Maybe Animated
     }

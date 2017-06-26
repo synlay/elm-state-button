@@ -12,6 +12,7 @@ start =
     Machine.newState
         { identity = "start"
         , text = "start"
+        , style = ""
         , icon = ""
         , disabled = False
         , initAnimation = Nothing
@@ -23,6 +24,7 @@ process =
     Machine.newState
         { identity = "process"
         , text = "process"
+        , style = ""
         , icon = ""
         , disabled = True
         , initAnimation = Nothing
@@ -34,6 +36,7 @@ succeed =
     Machine.newState
         { identity = "succeed"
         , text = "succeed"
+        , style = ""
         , icon = ""
         , disabled = False
         , initAnimation = Just pulse
@@ -45,6 +48,7 @@ failure =
     Machine.newState
         { identity = "failure"
         , text = "failure"
+        , style = ""
         , icon = ""
         , disabled = False
         , initAnimation = Just shake
@@ -109,6 +113,7 @@ suite =
                             Machine.newState
                                 { identity = str
                                 , text = str
+                                , style = ""
                                 , icon = ""
                                 , disabled = False
                                 , initAnimation = Just shake
