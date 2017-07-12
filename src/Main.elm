@@ -1,53 +1,20 @@
 port module Main exposing (..)
 
-import Machine exposing (..)
 import Animated exposing (..)
-import Time exposing (millisecond)
-import Maybe exposing (Maybe(Just, Nothing))
-import Machine exposing (..)
-import Html exposing (..)
-import Html.Events exposing (..)
-import Html.Attributes exposing (..)
 import Animation exposing (..)
+import FiniteStateMachine exposing (..)
+import Html exposing (..)
+import StateMachines.Simple as StateMachine exposing (..)
+import Types exposing (..)
+import Update exposing (..)
+import View exposing (..)
 
 
--- Types
-
-
-type Msg
-    = FromJs String
-    | Animate Animation.Msg
-    | InitAnimation Machine.Model
-
-
-type alias Model =
-    Machine.Model
-
-
-type alias MachineError =
+type alias StateMachineError =
     { message : String
     , error : String
     , state : String
     }
-
-
-type alias Flag =
-    { text : String
-    , icon : String
-    , style : String
-    }
-
-
-type alias Flags =
-    { start : Flag
-    , process : Flag
-    , succeed : Flag
-    , failure : Flag
-    }
-
-
-
--- Ports
 
 
 port state : (String -> msg) -> Sub msg
@@ -56,200 +23,118 @@ port state : (String -> msg) -> Sub msg
 port change : String -> Cmd msg
 
 
-port error : MachineError -> Cmd msg
+port error : StateMachineError -> Cmd msg
 
 
-
--- Main
-
-
-main : Program Flags Model Msg
+main : Program (List Flag) FiniteStateMachine.Model Types.Msg
 main =
     Html.programWithFlags
         { init = init
-        , view = view
+        , view = View.view
         , update = update
         , subscriptions = subscriptions
         }
 
 
-
--- Initialize
-
-
-init : Flags -> ( Model, Cmd Msg )
+init : List Flag -> ( FiniteStateMachine.Model, Cmd Types.Msg )
 init flags =
-    let
-        start =
-            Machine.newState
-                { identity = "start"
-                , text = flags.start.text
-                , icon = flags.start.icon
-                , style = flags.start.style
-                , disabled = False
-                , initAnimation = Nothing
-                }
-
-        process =
-            Machine.newState
-                { identity = "process"
-                , text = flags.process.text
-                , icon = flags.process.icon
-                , style = flags.process.style
-                , disabled = True
-                , initAnimation = Nothing
-                }
-
-        succeed =
-            Machine.newState
-                { identity = "succeed"
-                , text = flags.succeed.text
-                , icon = flags.succeed.icon
-                , style = flags.succeed.style
-                , disabled = False
-                , initAnimation = Just pulse
-                }
-
-        failure =
-            Machine.newState
-                { identity = "failure"
-                , text = flags.failure.text
-                , icon = flags.failure.icon
-                , style = flags.failure.style
-                , disabled = False
-                , initAnimation = Just shake
-                }
-
-        machine =
-            Machine.newMachine start
-                [ Machine.newTransition start process
-                , Machine.newTransition process succeed
-                , Machine.newTransition process failure
-                , Machine.newTransition succeed start
-                , Machine.newTransition failure start
-                ]
-
-        animation =
-            update (InitAnimation machine) machine
-    in
-        ( (Tuple.first animation), change machine.state.identity )
+    ( flagsToModel flags, Cmd.none )
 
 
+update : Types.Msg -> FiniteStateMachine.Model -> ( FiniteStateMachine.Model, Cmd Types.Msg )
+update msg model =
+    case msg of
+        Types.FromJs str ->
+            let
+                newModel =
+                    Tuple.first (handleJavaScriptUpdate model str)
+            in
+            update Types.ClickAnimation newModel
 
--- Subscriptions
+        Types.Animate aniMsg ->
+            handleAnimationUpdate model aniMsg
+
+        Types.ClickAnimation ->
+            handleButtonClick model
 
 
-subscriptions : Model -> Sub Msg
+subscriptions : FiniteStateMachine.Model -> Sub Types.Msg
 subscriptions model =
     let
         batch =
             [ state FromJs ]
     in
-        case model.state.initAnimation of
-            Just animated ->
-                Sub.batch (List.append batch [ Animation.subscription Animate [ animated.start ] ])
+    case model.current of
+        Just stateProperties ->
+            let
+                properties =
+                    stateProperties.properties
+            in
+            case properties.initAnimation of
+                Just animated ->
+                    Sub.batch (List.append batch [ Animation.subscription Animate [ animated.start ] ])
 
-            Nothing ->
-                Sub.batch batch
-
-
-
--- View
-
-
-viewGetButtonAnimation model =
-    case model.state.initAnimation of
-        Just animated ->
-            Animation.render animated.start
+                Nothing ->
+                    Sub.batch batch
 
         Nothing ->
-            []
+            Sub.batch batch
 
 
-viewConstructButtonAnimation model attributes =
+
+--
+
+
+flagsToModel : List Flag -> FiniteStateMachine.Model
+flagsToModel flags =
     let
-        animation =
-            viewGetButtonAnimation model
+        states =
+            flagsToStates flags
     in
-        List.concat [ animation, attributes ]
+    { current = mapStateToStateProperties FiniteStateMachine.startState states
+    , previous = Nothing
+    , states = states
+    }
 
 
-view : Model -> Html Msg
-view model =
-    let
-        buttonAttributes =
-            viewConstructButtonAnimation model
-                [ onClick (InitAnimation model)
-                , class model.state.style
-                , disabled model.state.disabled
-                ]
-    in
-        button buttonAttributes
-            [ span []
-                [ i [ class model.state.icon, attribute "aria-hidden" "true" ] []
-                , text (" " ++ model.state.text)
-                ]
-            ]
+flagsToStates : List Flag -> List StateProperties
+flagsToStates flags =
+    List.filterMap flagToState flags
 
 
+flagToState : Flag -> Maybe StateProperties
+flagToState flag =
+    case FiniteStateMachine.mapToState flag.name of
+        Ok state ->
+            let
+                properties =
+                    { identity = flag.name
+                    , text = flag.text
+                    , icon = flag.icon
+                    , style = flag.style
+                    , disabled = flag.disabled
+                    , initAnimation = Animated.mapToAnimation flag.initAnimation
+                    }
+            in
+            Just (StateProperties state properties)
 
--- Update
+        Err error ->
+            let
+                _ =
+                    Debug.log "Error: mapToState" error
+            in
+            Nothing
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
-    case msg of
-        InitAnimation newModel ->
-            case newModel.state.initAnimation of
-                Just animated ->
-                    let
-                        state =
-                            newModel.state
+mapStateToStateProperties : StateMachine.State -> List StateProperties -> Maybe StateProperties
+mapStateToStateProperties state states =
+    case queryStateProperties state states of
+        Ok stateWithProperties ->
+            Just stateWithProperties
 
-                        newInitAnimationStart =
-                            Animation.interrupt animated.animation animated.start
-
-                        newInitAnimation =
-                            { animated | start = newInitAnimationStart }
-
-                        newAgent =
-                            { state | initAnimation = Just newInitAnimation }
-                    in
-                        ( { newModel | state = newAgent }, Cmd.none )
-
-                Nothing ->
-                    ( newModel, Cmd.none )
-
-        FromJs str ->
-            case (Machine.changeState str model) of
-                Ok newModel ->
-                    let
-                        animation =
-                            update (InitAnimation newModel) model
-                    in
-                        ( (Tuple.first animation), change newModel.state.identity )
-
-                Err err ->
-                    let
-                        machineError =
-                            { message = toString err, state = model.state.identity, error = str }
-                    in
-                        ( model, error machineError )
-
-        Animate animMsg ->
-            case model.state.initAnimation of
-                Just animated ->
-                    let
-                        state =
-                            model.state
-
-                        newInitAnimation =
-                            { animated | start = Animation.update animMsg animated.start }
-
-                        newAgent =
-                            { state | initAnimation = Just newInitAnimation }
-                    in
-                        ( { model | state = newAgent }, Cmd.none )
-
-                Nothing ->
-                    ( model, Cmd.none )
+        Err error ->
+            let
+                _ =
+                    Debug.log "Error: queryStateProperties" error
+            in
+            Nothing
