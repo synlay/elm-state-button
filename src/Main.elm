@@ -1,8 +1,9 @@
-port module Main exposing (..)
+port module Main exposing (changeState, newModel, newState, stateButton)
 
 import Animated exposing (..)
 import Animation exposing (..)
 import FiniteStateMachine exposing (..)
+import Helper exposing (..)
 import Html exposing (..)
 import StateMachines.Simple as StateMachine exposing (..)
 import Types exposing (..)
@@ -10,11 +11,13 @@ import Update exposing (..)
 import View exposing (..)
 
 
-type alias StateMachineError =
-    { message : String
-    , error : String
-    , state : String
-    }
+type Msg
+    = FromJs String
+    | Animate Animation.Msg
+
+
+
+-- JavaScript
 
 
 port state : (String -> msg) -> Sub msg
@@ -26,7 +29,45 @@ port change : String -> Cmd msg
 port error : StateMachineError -> Cmd msg
 
 
-main : Program (List Flag) FiniteStateMachine.Model Types.Msg
+
+-- Elm
+
+
+newState : StateMachine.State -> Properties -> StateProperties
+newState state properties =
+    { state = state
+    , properties = properties
+    }
+
+
+newModel : List StateProperties -> FiniteStateMachine.Model
+newModel states =
+    { previous = Nothing
+    , current = mapStateToStateProperties FiniteStateMachine.startState states
+    , states = states
+    }
+
+
+changeState : StateMachine.State -> FiniteStateMachine.Model -> Result FiniteStateMachine.StateError FiniteStateMachine.Model
+changeState state model =
+    triggerStateChange state model
+
+
+stateButton : FiniteStateMachine.Model -> Html msg
+stateButton model =
+    View.view model
+
+
+
+-- Main
+
+
+init : List Flag -> ( FiniteStateMachine.Model, Cmd Msg )
+init flags =
+    ( flagsToModel flags, Cmd.none )
+
+
+main : Program (List Flag) FiniteStateMachine.Model Msg
 main =
     Html.programWithFlags
         { init = init
@@ -36,29 +77,17 @@ main =
         }
 
 
-init : List Flag -> ( FiniteStateMachine.Model, Cmd Types.Msg )
-init flags =
-    ( flagsToModel flags, Cmd.none )
-
-
-update : Types.Msg -> FiniteStateMachine.Model -> ( FiniteStateMachine.Model, Cmd Types.Msg )
+update : Msg -> FiniteStateMachine.Model -> ( FiniteStateMachine.Model, Cmd Msg )
 update msg model =
     case msg of
-        Types.FromJs str ->
-            let
-                newModel =
-                    Tuple.first (handleJavaScriptUpdate model str)
-            in
-            update Types.ClickAnimation newModel
+        FromJs str ->
+            handleJavaScriptUpdate model str
 
-        Types.Animate aniMsg ->
+        Animate aniMsg ->
             handleAnimationUpdate model aniMsg
 
-        Types.ClickAnimation ->
-            handleButtonClick model
 
-
-subscriptions : FiniteStateMachine.Model -> Sub Types.Msg
+subscriptions : FiniteStateMachine.Model -> Sub Msg
 subscriptions model =
     let
         batch =
@@ -79,62 +108,3 @@ subscriptions model =
 
         Nothing ->
             Sub.batch batch
-
-
-
---
-
-
-flagsToModel : List Flag -> FiniteStateMachine.Model
-flagsToModel flags =
-    let
-        states =
-            flagsToStates flags
-    in
-    { current = mapStateToStateProperties FiniteStateMachine.startState states
-    , previous = Nothing
-    , states = states
-    }
-
-
-flagsToStates : List Flag -> List StateProperties
-flagsToStates flags =
-    List.filterMap flagToState flags
-
-
-flagToState : Flag -> Maybe StateProperties
-flagToState flag =
-    case FiniteStateMachine.mapToState flag.name of
-        Ok state ->
-            let
-                properties =
-                    { identity = flag.name
-                    , text = flag.text
-                    , icon = flag.icon
-                    , style = flag.style
-                    , disabled = flag.disabled
-                    , initAnimation = Animated.mapToAnimation flag.initAnimation
-                    }
-            in
-            Just (StateProperties state properties)
-
-        Err error ->
-            let
-                _ =
-                    Debug.log "Error: mapToState" error
-            in
-            Nothing
-
-
-mapStateToStateProperties : StateMachine.State -> List StateProperties -> Maybe StateProperties
-mapStateToStateProperties state states =
-    case queryStateProperties state states of
-        Ok stateWithProperties ->
-            Just stateWithProperties
-
-        Err error ->
-            let
-                _ =
-                    Debug.log "Error: queryStateProperties" error
-            in
-            Nothing

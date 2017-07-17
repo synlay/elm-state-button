@@ -7,8 +7,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Types exposing (..)
 
-
-renderState : Maybe FiniteStateMachine.StateProperties -> Html Types.Msg
+renderState : Maybe Types.StateProperties -> Html msg
 renderState stateProperties =
     case stateProperties of
         Just stateProperties ->
@@ -58,7 +57,7 @@ viewConstructButtonAnimation model attributes =
     List.concat [ animation, attributes ]
 
 
-view : FiniteStateMachine.Model -> Html Types.Msg
+view : FiniteStateMachine.Model -> Html msg
 view model =
     let
         extendAttributes maybeState attributes =
@@ -76,7 +75,9 @@ view model =
     in
     Html.button
         (viewConstructButtonAnimation model
-            (extendAttributes model.current [ onClick Types.ClickAnimation ])
+            (extendAttributes model.current [
+            -- onClick ClickAnimation
+            ])
         )
         [ --renderState model.previous,
           renderState model.current

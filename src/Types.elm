@@ -1,14 +1,12 @@
-module Types exposing (Msg(..), Flag)
+module Types exposing (..)
 
-import Animation exposing (..)
-import FiniteStateMachine exposing (..)
+import Animated exposing (..)
+import StateMachines.Simple as StateMachine exposing (..)
 
-
-type Msg
-    = ClickAnimation
-    | FromJs String
-    | Animate Animation.Msg
-
+type alias StateProperties =
+    { state : StateMachine.State
+    , properties : Properties
+    }
 
 
 type alias Flag =
@@ -18,4 +16,21 @@ type alias Flag =
     , style : String
     , disabled : Bool
     , initAnimation : Maybe String
+    }
+
+
+type alias Properties =
+    { --identity : String,
+      text : String
+    , icon : String
+    , style : String
+    , disabled : Bool
+    , initAnimation : Maybe Animated.Model
+    }
+
+
+type alias StateMachineError =
+    { message : String
+    , error : String
+    , state : String
     }
