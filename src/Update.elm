@@ -9,6 +9,19 @@ import Types exposing (..)
 {- Trigger state button animation. -}
 
 
+update : Types.Msg -> FiniteStateMachine.Model -> ( FiniteStateMachine.Model, Cmd Types.Msg )
+update msg model =
+    case msg of
+        Types.FromJs str ->
+            handleJavaScriptUpdate model str
+
+        Types.Animate aniMsg ->
+            handleAnimationUpdate model aniMsg
+
+        InitAnimation ->
+            ( triggerButtonAnimation model, Cmd.none )
+
+
 triggerStateChange : StateMachine.State -> FiniteStateMachine.Model -> Result FiniteStateMachine.StateError FiniteStateMachine.Model
 triggerStateChange state model =
     case FiniteStateMachine.changeState state model of
@@ -18,7 +31,7 @@ triggerStateChange state model =
         Err error ->
             let
                 _ =
-                    Debug.log "Error: changeState" error
+                    Debug.log "StateButtonError" error
             in
             Err error
 
@@ -30,9 +43,6 @@ triggerButtonAnimation model =
             case currentStateProperties.properties.initAnimation of
                 Just animated ->
                     let
-                        _ =
-                            Debug.log "Animation triggert" 123
-
                         properties =
                             currentStateProperties.properties
 

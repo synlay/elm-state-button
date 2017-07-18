@@ -42,7 +42,7 @@ flagToState flag =
         Err error ->
             let
                 _ =
-                    Debug.log "Error: mapToState" error
+                    Debug.log "StateButtonError: mapToState" error
             in
             Nothing
 
@@ -56,6 +56,6 @@ mapStateToStateProperties state states =
         Err error ->
             let
                 _ =
-                    Debug.log "Error: queryStateProperties" error
+                    Debug.log "StateButtonError: queryStateProperties" error
             in
             Nothing

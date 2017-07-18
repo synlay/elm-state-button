@@ -2,13 +2,21 @@
   "name": "elm-state-button",
   "version": "0.1.0",
   "license": "MIT",
-  "description": "elm state button based on a small state machine",
+  "description": "elm state button based on a simple state machine",
   "scripts": {
-    "clean": "rimraf elm-stuff tests/elm-stuff node_modules",
-    "test": "elm-test"
+    "test": "elm-test",
+    "build": "mkdirp dist && npm run build-app && npm run build-client",
+    "build-app": "elm-make ./src/App.elm --output ./dist/app.js",
+    "build-client": "elm-make ./docs/Client.elm --output ./dist/client.js",
+    "demo": "live-server --no-browser --host=localhost --port=8000",
+    "clean": "rimraf dist elm-stuff tests/elm-stuff node_modules"
+  },
+  "dependencies": {
+    "mkdir": "0.0.2",
+    "rimraf": "2.6.1"
   },
   "devDependencies": {
     "elm-test": "0.18.3",
-    "rimraf": "2.6.1"
+    "live-server": "1.2.0"
   }
 }

@@ -1,4 +1,20 @@
-port module Main exposing (changeState, newModel, newState, stateButton)
+port module App exposing (changeState, createState, newStateMachine, stateButton)
+
+{-| Elm state button based on a simple state machine
+
+
+# StateButton
+
+@docs createState
+TODO
+@docs newStateMachine
+TODO
+@docs changeState
+TODO
+@docs stateButton
+TODO
+
+-}
 
 import Animated exposing (..)
 import Animation exposing (..)
@@ -9,12 +25,6 @@ import StateMachines.Simple as StateMachine exposing (..)
 import Types exposing (..)
 import Update exposing (..)
 import View exposing (..)
-
-
-type Msg
-    = FromJs String
-    | Animate Animation.Msg
-
 
 
 -- JavaScript
@@ -33,15 +43,15 @@ port error : StateMachineError -> Cmd msg
 -- Elm
 
 
-newState : StateMachine.State -> Properties -> StateProperties
-newState state properties =
+createState : StateMachine.State -> Properties -> StateProperties
+createState state properties =
     { state = state
     , properties = properties
     }
 
 
-newModel : List StateProperties -> FiniteStateMachine.Model
-newModel states =
+newStateMachine : List StateProperties -> FiniteStateMachine.Model
+newStateMachine states =
     { previous = Nothing
     , current = mapStateToStateProperties FiniteStateMachine.startState states
     , states = states
@@ -53,7 +63,7 @@ changeState state model =
     triggerStateChange state model
 
 
-stateButton : FiniteStateMachine.Model -> Html msg
+stateButton : FiniteStateMachine.Model -> Html Types.Msg
 stateButton model =
     View.view model
 
@@ -62,32 +72,22 @@ stateButton model =
 -- Main
 
 
-init : List Flag -> ( FiniteStateMachine.Model, Cmd Msg )
-init flags =
-    ( flagsToModel flags, Cmd.none )
-
-
-main : Program (List Flag) FiniteStateMachine.Model Msg
+main : Program (List Flag) FiniteStateMachine.Model Types.Msg
 main =
     Html.programWithFlags
         { init = init
         , view = View.view
-        , update = update
+        , update = Update.update
         , subscriptions = subscriptions
         }
 
 
-update : Msg -> FiniteStateMachine.Model -> ( FiniteStateMachine.Model, Cmd Msg )
-update msg model =
-    case msg of
-        FromJs str ->
-            handleJavaScriptUpdate model str
-
-        Animate aniMsg ->
-            handleAnimationUpdate model aniMsg
+init : List Flag -> ( FiniteStateMachine.Model, Cmd Types.Msg )
+init flags =
+    ( flagsToModel flags, Cmd.none )
 
 
-subscriptions : FiniteStateMachine.Model -> Sub Msg
+subscriptions : FiniteStateMachine.Model -> Sub Types.Msg
 subscriptions model =
     let
         batch =
