@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="https://bowercdn.net/c/bootstrap-3.3.7/dist/css/bootstrap.css">
+  <style media="screen">
+    body {
+      padding: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <script type="text/javascript" src="../dist/app.js"></script>
+  <h2>JavaScript</h2>
+  <div id="state-button-js"></div>
+  <script type="text/javascript">
+    var element = document.getElementById("state-button-js");
+
+    var flags = [{
+        name: "Start",
+        text: 'Start',
+        icon: 'glyphicon glyphicon-send',
+        style: 'btn btn-primary',
+        disabled: false,
+        initAnimation: 'pulse'
+      },
+      {
+        name: 'Process',
+        text: 'Process',
+        icon: 'glyphicon glyphicon-time',
+        style: 'btn btn-default',
+        disabled: false,
+        initAnimation: 'pulse'
+      },
+      {
+        name: 'Failure',
+        text: 'Failure',
+        icon: 'glyphicon glyphicon-remove',
+        style: 'btn btn-danger',
+        disabled: false,
+        initAnimation: 'shake'
+      },
+      {
+        name: 'Success',
+        text: 'Success',
+        icon: 'glyphicon glyphicon-ok',
+        style: 'btn btn-success',
+        disabled: false,
+        initAnimation: 'pulse'
+      }
+    ]
+
+    var stateButtonJs = Elm.App.embed(element, flags);
+
+    stateButtonJs.ports.change.subscribe(function(state) {
+      console.log(state);
+    });
+
+    stateButtonJs.ports.error.subscribe(function(error) {
+      console.error(error);
+    });
+  </script>
+  <a class="btn btn-link" onclick="stateButtonJs.ports.state.send('Start')">Emit 'Start'</a>
+  <a class="btn btn-link" onclick="stateButtonJs.ports.state.send('Process')">Emit 'Process'</a>
+  <a class="btn btn-link" onclick="stateButtonJs.ports.state.send('Failure')">Emit 'Failure'</a>
+  <a class="btn btn-link" onclick="stateButtonJs.ports.state.send('Success')">Emit 'Success'</a>
+
+  <hr>
+
+  <script type="text/javascript" src="../dist/client.js"></script>
+  <h2>Elm</h2>
+  <div id="state-button-elm"></div>
+  <script type="text/javascript">
+    var element = document.getElementById("state-button-elm");
+
+    var stateButtonElm = Elm.Client.embed(element);
+  </script>
+
+
+</body>
+
+</html>
