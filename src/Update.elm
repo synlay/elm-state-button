@@ -4,6 +4,7 @@ import Animation exposing (..)
 import FiniteStateMachine exposing (..)
 import StateMachines.Simple as StateMachine exposing (..)
 import Types exposing (..)
+import Ports exposing (..)
 
 
 {- Trigger state button animation. -}
@@ -76,7 +77,7 @@ handleJavaScriptUpdate model str =
         Ok state ->
             case triggerStateChange state model of
                 Ok newModel ->
-                    ( newModel, Cmd.none )
+                    ( newModel, change (toString state) )
 
                 Err error ->
                     ( model, Cmd.none )
