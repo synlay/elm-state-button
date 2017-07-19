@@ -13,6 +13,7 @@
     "clean": "rimraf dist elm-stuff tests/elm-stuff node_modules"
   },
   "dependencies": {
+    "elm": "0.18.0",
     "mkdir": "0.0.2",
     "rimraf": "2.6.1",
     "uglify-js": "3.0.25"
