@@ -28,22 +28,6 @@ import Update exposing (..)
 import View exposing (..)
 
 
--- JavaScript
-
-
-port state : (String -> msg) -> Sub msg
-
-
-port change : String -> Cmd msg
-
-
-port error : StateMachineError -> Cmd msg
-
-
-
--- Elm
-
-
 createState : StateMachine.State -> Properties -> StateProperties
 createState state properties =
     { state = state
