@@ -6,8 +6,8 @@
   "scripts": {
     "test": "elm-test",
     "build": "mkdirp dist && npm run build-app && npm run build-client",
-    "build-app": "elm-make ./src/App.elm --output ./dist/app.js",
-    "build-client": "elm-make ./docs/Client.elm --output ./dist/client.js",
+    "build-app": "elm-make ./src/App.elm --output ./dist/app.js --yes",
+    "build-client": "elm-make ./docs/Client.elm --output ./dist/client.js --yes",
     "demo": "live-server --no-browser --host=localhost --port=8000",
     "clean": "rimraf dist elm-stuff tests/elm-stuff node_modules"
   },
