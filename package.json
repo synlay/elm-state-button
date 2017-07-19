@@ -5,15 +5,17 @@
   "description": "elm state button based on a simple state machine",
   "scripts": {
     "test": "elm-test",
-    "build": "mkdirp dist && npm run build-app && npm run build-client",
+    "build": "mkdirp dist && npm run build-app && npm run build-client && npm run minify-app",
     "build-app": "elm-make ./src/App.elm --output ./dist/app.js --yes",
     "build-client": "elm-make ./docs/Client.elm --output ./dist/client.js --yes",
+    "minify-app": "uglifyjs ./dist/app.js --output ./dist/app.min.js --source-map",
     "demo": "live-server --no-browser --host=localhost --port=8000",
     "clean": "rimraf dist elm-stuff tests/elm-stuff node_modules"
   },
   "dependencies": {
     "mkdir": "0.0.2",
-    "rimraf": "2.6.1"
+    "rimraf": "2.6.1",
+    "uglify-js": "3.0.25"
   },
   "devDependencies": {
     "elm-test": "0.18.3",
