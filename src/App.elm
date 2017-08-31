@@ -6,13 +6,16 @@ port module App exposing (changeState, createState, newStateMachine, stateButton
 # StateButton
 
 @docs createState
-TODO
+Create a new state for a state machine
+
 @docs newStateMachine
-TODO
+Create a new state machine with given states
+
 @docs changeState
-TODO
+Change a state of a given state machine
+
 @docs stateButton
-TODO
+Get html state button
 
 -}
 
