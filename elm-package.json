@@ -1,6 +1,6 @@
 {
     "version": "0.1.0",
-    "summary": "elm state button based on a tiny state machine",
+    "summary": "elm state button based on a simple state machine",
     "repository": "https://github.com/synlay/elm-state-button.git",
     "license": "MIT",
     "source-directories": [
