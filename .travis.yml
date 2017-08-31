@@ -7,7 +7,7 @@ cache:
 
 os:
   - osx
-  - linux
+  # - linux
 
 env:
   matrix:
